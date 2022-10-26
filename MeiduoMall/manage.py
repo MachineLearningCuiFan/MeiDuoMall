@@ -2,11 +2,11 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-
+import logging
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MeiduoMall.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MeiduoMall.settings.development')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
