@@ -13,10 +13,13 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 # pycharm 自带git 操作
 from pathlib import Path
 import os
+import sys
+from django.urls import reverse
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+#print(BASE_DIR)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -26,10 +29,14 @@ SECRET_KEY = 'django-insecure-vq18!_h-ct@s@c=u)k#h&d$4-_2ncpn6j#tdp0&+3x$$tf!_#d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+# 添加 域名网址
+ALLOWED_HOSTS = ['www.meiduo.site','127.0.0.1']
 
 # Application definition
+
+#print(sys.path)  # 查看导包路径
+
+sys.path.insert(0,os.path.join(BASE_DIR,'apps'))  # 追加导包路径
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -38,6 +45,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users.apps.UsersConfig',
+    'contents.apps.ContentsConfig',
+    'verifications.apps.VerificationsConfig',
+    'oauth.apps.OauthConfig',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +66,7 @@ ROOT_URLCONF = 'MeiduoMall.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.jinja2.Jinja2',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'template')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -126,6 +137,14 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
+
+    "verifications":{ # 验证码
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "session"
@@ -165,7 +184,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
+# 配置静态文件加载路径
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
@@ -214,3 +234,20 @@ LOGGING = {
         },
     }
 }
+
+
+#  指定 自定义的用户模型类
+AUTH_USER_MODEL = "users.User"
+
+
+# 指定自定用户认证后端
+
+AUTHENTICATION_BACKENDS = ["users.utils.UsernameMobileBackend"]
+
+# 判断用户是否登陆，指定未登录用户重定向的地址
+LOGIN_URL = '/login/'
+
+#  QQ登录参数
+QQ_CLIENT_ID = '101518219'
+QQ_CLIENT_SECRET = '418d84ebdc7241efb79536886ae95224'
+QQ_REDIRECT_URI = 'http://www.meiduo.site:8000/oauth_callback'

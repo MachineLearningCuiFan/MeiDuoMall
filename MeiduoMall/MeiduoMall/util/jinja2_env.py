@@ -15,6 +15,7 @@ def jinja2_enviroment(**options):
         'url':reverse,          # 反向解析
     })
     # 返回环境对象
+    return env
 
 
 
